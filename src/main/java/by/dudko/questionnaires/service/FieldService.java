@@ -9,9 +9,9 @@ import java.util.Optional;
 public interface FieldService {
     List<FieldReadDto> findAllByUserId(long userId);
 
-    Optional<Long> save(long userId, FieldCreateEditDto createEditDto);
+    Optional<FieldReadDto> save(long userId, FieldCreateEditDto createEditDto);
 
-    boolean update(long fieldId, FieldCreateEditDto createEditDto);
+    Optional<FieldReadDto> update(long fieldId, FieldCreateEditDto createEditDto);
 
     boolean deleteById(long id);
 }

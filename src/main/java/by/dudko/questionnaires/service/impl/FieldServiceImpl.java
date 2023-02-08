@@ -1,10 +1,9 @@
 package by.dudko.questionnaires.service.impl;
 
-import by.dudko.questionnaires.mapper.impl.field.FieldCreateEditMapper;
-import by.dudko.questionnaires.mapper.impl.field.FieldReadMapper;
 import by.dudko.questionnaires.dto.field.FieldCreateEditDto;
 import by.dudko.questionnaires.dto.field.FieldReadDto;
-import by.dudko.questionnaires.model.Field;
+import by.dudko.questionnaires.mapper.impl.field.FieldCreateEditMapper;
+import by.dudko.questionnaires.mapper.impl.field.FieldReadMapper;
 import by.dudko.questionnaires.repository.FieldRepository;
 import by.dudko.questionnaires.repository.UserRepository;
 import by.dudko.questionnaires.service.FieldService;
@@ -34,26 +33,25 @@ public class FieldServiceImpl implements FieldService {
 
     @Transactional
     @Override
-    public Optional<Long> save(long userId, FieldCreateEditDto createEditDto) {
+    public Optional<FieldReadDto> save(long userId, FieldCreateEditDto createEditDto) {
         if (userRepository.findById(userId).isPresent()) {
             return Optional.of(createEditDto)
                     .map(fieldCreateEditMapper::map)
                     .map(fieldRepository::save)
-                    .map(Field::getId);
+                    .map(fieldReadMapper::map);
         }
         return Optional.empty();
     }
 
     @Transactional
     @Override
-    public boolean update(long fieldId, FieldCreateEditDto createEditDto) {
+    public Optional<FieldReadDto> update(long fieldId, FieldCreateEditDto createEditDto) {
         return fieldRepository.findById(fieldId)
                 .map(field -> {
                             fieldCreateEditMapper.map(createEditDto, field);
-                            return true;
+                            return fieldReadMapper.map(field);
                         }
-                )
-                .orElse(false);
+                );
     }
 
     @Transactional

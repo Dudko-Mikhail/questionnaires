@@ -33,17 +33,16 @@ public class FieldRestController {
 
     @ResponseStatus(code = HttpStatus.CREATED)
     @PostMapping("/users/{id}/fields")
-    public long saveField(@PathVariable("id") long userId, @RequestBody @Validated FieldCreateEditDto createEditDto) {
+    public FieldReadDto saveField(@PathVariable("id") long userId, @RequestBody @Validated FieldCreateEditDto createEditDto) {
         return fieldService.save(userId, createEditDto)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     @PostMapping("/fields/{id}")
-    public void updateField(@PathVariable long id, @RequestBody @Validated FieldCreateEditDto createEditDto) {
-        if (!fieldService.update(id, createEditDto)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
+    public FieldReadDto updateField(@PathVariable long id, @RequestBody @Validated FieldCreateEditDto createEditDto) {
+        return fieldService.update(id, createEditDto)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
