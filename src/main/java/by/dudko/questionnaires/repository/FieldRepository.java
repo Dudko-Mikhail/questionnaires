@@ -2,11 +2,9 @@ package by.dudko.questionnaires.repository;
 
 import by.dudko.questionnaires.model.Field;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
 public interface FieldRepository extends JpaRepository<Field, Long> {
     List<Field> findAllByUserIdOrderByOrder(long userId);
 }
