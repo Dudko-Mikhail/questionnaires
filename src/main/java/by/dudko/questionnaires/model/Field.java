@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -35,11 +36,15 @@ public class Field {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
+    @Column(name = "`order`")
     private int order;
     private String label;
 
     @Enumerated(value = EnumType.STRING)
     private Type type;
+
+    @org.hibernate.annotations.Type(type = "string-array")
+    private String[] options;
     private boolean isRequired;
     private boolean isActive;
 

@@ -9,6 +9,7 @@ import org.hibernate.validator.constraints.Length;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
+import java.util.Set;
 
 @Value
 @Builder
@@ -24,6 +25,8 @@ public class FieldCreateEditDto {
     @NotNull
     @ValueOfEnum(enumClass = Field.Type.class)
     String type;
+
+    Set<String> options;
 
     @NotNull
     Boolean isRequired;

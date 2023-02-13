@@ -6,6 +6,8 @@ import by.dudko.questionnaires.mapper.MapperWithTargetObject;
 import by.dudko.questionnaires.model.Field;
 import org.springframework.stereotype.Component;
 
+import java.util.Set;
+
 @Component
 public class FieldCreateEditMapper implements Mapper<FieldCreateEditDto, Field>,
         MapperWithTargetObject<FieldCreateEditDto, Field> {
@@ -23,6 +25,8 @@ public class FieldCreateEditMapper implements Mapper<FieldCreateEditDto, Field>,
         target.setOrder(source.getOrder());
         target.setLabel(source.getLabel());
         target.setType(Field.Type.valueOf(source.getType()));
+        Set<String> options = source.getOptions();
+        target.setOptions(options != null ? options.toArray(new String[0]) : null);
         target.setRequired(source.getIsRequired());
         target.setActive(source.getIsActive());
         return target;

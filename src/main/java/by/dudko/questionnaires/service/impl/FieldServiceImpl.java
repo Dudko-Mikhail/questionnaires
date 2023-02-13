@@ -4,6 +4,7 @@ import by.dudko.questionnaires.dto.field.FieldCreateEditDto;
 import by.dudko.questionnaires.dto.field.FieldReadDto;
 import by.dudko.questionnaires.mapper.impl.field.FieldCreateEditMapper;
 import by.dudko.questionnaires.mapper.impl.field.FieldReadMapper;
+import by.dudko.questionnaires.model.Field;
 import by.dudko.questionnaires.repository.FieldRepository;
 import by.dudko.questionnaires.repository.UserRepository;
 import by.dudko.questionnaires.service.FieldService;
@@ -34,24 +35,21 @@ public class FieldServiceImpl implements FieldService {
     @Transactional
     @Override
     public Optional<FieldReadDto> save(long userId, FieldCreateEditDto createEditDto) {
-        if (userRepository.findById(userId).isPresent()) {
-            return Optional.of(createEditDto)
-                    .map(fieldCreateEditMapper::map)
-                    .map(fieldRepository::save)
-                    .map(fieldReadMapper::map);
-        }
-        return Optional.empty();
+        return userRepository.findById(userId)
+                .map(user -> {
+                    Field field = fieldCreateEditMapper.map(createEditDto);
+                    field.setUser(user);
+                    return fieldRepository.save(field);
+                })
+                .map(fieldReadMapper::map);
     }
 
     @Transactional
     @Override
     public Optional<FieldReadDto> update(long fieldId, FieldCreateEditDto createEditDto) {
         return fieldRepository.findById(fieldId)
-                .map(field -> {
-                            fieldCreateEditMapper.map(createEditDto, field);
-                            return fieldReadMapper.map(field);
-                        }
-                );
+                .map(field -> fieldCreateEditMapper.map(createEditDto, field))
+                .map(fieldReadMapper::map);
     }
 
     @Transactional
