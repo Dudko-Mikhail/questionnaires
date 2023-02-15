@@ -1,5 +1,7 @@
 package by.dudko.questionnaires.dto.user;
 
+import by.dudko.questionnaires.model.User;
+import by.dudko.questionnaires.validation.annotation.UniqueFieldValue;
 import lombok.Builder;
 import lombok.Value;
 import org.hibernate.validator.constraints.Length;
@@ -13,6 +15,7 @@ public class UserCreateDto {
     @Email
     @NotEmpty
     @Length(max = 64)
+    @UniqueFieldValue(entityClass = User.class, fieldName = "email")
     String email;
 
     @Length(max = 32, min = 3)
