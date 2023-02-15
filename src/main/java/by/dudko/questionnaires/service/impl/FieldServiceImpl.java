@@ -1,5 +1,6 @@
 package by.dudko.questionnaires.service.impl;
 
+import by.dudko.questionnaires.dto.PageResponse;
 import by.dudko.questionnaires.dto.field.FieldCreateEditDto;
 import by.dudko.questionnaires.dto.field.FieldReadDto;
 import by.dudko.questionnaires.mapper.impl.field.FieldCreateEditMapper;
@@ -9,12 +10,11 @@ import by.dudko.questionnaires.repository.FieldRepository;
 import by.dudko.questionnaires.repository.UserRepository;
 import by.dudko.questionnaires.service.FieldService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -26,10 +26,11 @@ public class FieldServiceImpl implements FieldService {
     private final FieldCreateEditMapper fieldCreateEditMapper;
 
     @Override
-    public List<FieldReadDto> findAllByUserId(long userId) {
-        return fieldRepository.findAllByUserIdOrderByOrder(userId).stream()
-                .map(fieldReadMapper::map)
-                .collect(Collectors.toList());
+    public PageResponse<FieldReadDto> findAllByUserId(long userId, int page, int size) {
+        return PageResponse.of(
+                fieldRepository.findAllByUserIdOrderByOrder(userId, PageRequest.of(page, size))
+                        .map(fieldReadMapper::map)
+        );
     }
 
     @Transactional

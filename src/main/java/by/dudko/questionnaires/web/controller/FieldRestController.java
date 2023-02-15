@@ -1,5 +1,6 @@
-package by.dudko.questionnaires.controller;
+package by.dudko.questionnaires.web.controller;
 
+import by.dudko.questionnaires.dto.PageResponse;
 import by.dudko.questionnaires.dto.field.FieldCreateEditDto;
 import by.dudko.questionnaires.dto.field.FieldReadDto;
 import by.dudko.questionnaires.service.FieldService;
@@ -13,11 +14,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -27,8 +27,10 @@ public class FieldRestController {
     private final FieldService fieldService;
 
     @GetMapping("/users/{id}/fields")
-    public List<FieldReadDto> findUserFields(@PathVariable("id") long userId) {
-        return fieldService.findAllByUserId(userId);
+    public PageResponse<FieldReadDto> findUserFields(@PathVariable("id") long userId,
+                                                     @RequestParam(defaultValue = "0") int page,
+                                                     @RequestParam(defaultValue = "5") int size) {
+        return fieldService.findAllByUserId(userId, page, size);
     }
 
     @ResponseStatus(code = HttpStatus.CREATED)
