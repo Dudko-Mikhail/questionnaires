@@ -11,3 +11,8 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQL95Dialect
         show_sql: true
         format_sql: true
+
+app.jwt:
+  secret: 26452948404D6351665468576D5A7134743777217A25432A462D4A614E645267
+  live-time: 7200000
+  issuer: Questionnaires App
