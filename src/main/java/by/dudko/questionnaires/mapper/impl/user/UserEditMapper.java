@@ -9,10 +9,10 @@ import org.springframework.stereotype.Component;
 public class UserEditMapper implements MapperWithTargetObject<UserEditDto, User> {
     @Override
     public User map(UserEditDto source, User target) {
-       target.setEmail(source.getEmail());
-       target.setPhoneNumber(source.getPhoneNumber());
-       target.setFirstName(source.getFirstName());
-       target.setLastName(source.getLastName());
+        target.setEmail(source.getEmail());
+        target.setPhoneNumber(source.getPhoneNumber());
+        target.setFirstName(source.getFirstName());
+        target.setLastName(source.getLastName());
         return target;
     }
 }

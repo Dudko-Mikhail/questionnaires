@@ -1,7 +1,7 @@
 package by.dudko.questionnaires.mapper.impl.user;
 
-import by.dudko.questionnaires.mapper.Mapper;
 import by.dudko.questionnaires.dto.user.UserReadDto;
+import by.dudko.questionnaires.mapper.Mapper;
 import by.dudko.questionnaires.model.User;
 import org.springframework.stereotype.Component;
 

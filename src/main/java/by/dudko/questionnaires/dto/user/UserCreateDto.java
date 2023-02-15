@@ -26,7 +26,4 @@ public class UserCreateDto {
 
     @NotEmpty
     String password;
-
-    @NotEmpty
-    String passwordRepeat;
 }
