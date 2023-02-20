@@ -33,8 +33,13 @@ public class User {
     private String firstName;
     private String lastName;
     private String password;
+    private boolean isActivated;
 
     @OneToMany(mappedBy = "user")
     @Builder.Default
     private List<Field> fields = new ArrayList<>();
+
+//    @OneToMany(mappedBy = "questionnaireOwner")
+//    @Builder.Default
+//    private List<Response> responses = new ArrayList<>();
 }
