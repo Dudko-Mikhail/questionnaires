@@ -10,7 +10,7 @@ import by.dudko.questionnaires.repository.FieldRepository;
 import by.dudko.questionnaires.repository.UserRepository;
 import by.dudko.questionnaires.service.FieldService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,11 +26,9 @@ public class FieldServiceImpl implements FieldService {
     private final FieldCreateEditMapper fieldCreateEditMapper;
 
     @Override
-    public PageResponse<FieldReadDto> findAllByUserId(long userId, int page, int size) {
-        return PageResponse.of(
-                fieldRepository.findAllByUserIdOrderByOrder(userId, PageRequest.of(page, size))
-                        .map(fieldReadMapper::map)
-        );
+    public PageResponse<FieldReadDto> findAllByUserId(long userId, Pageable pageable) {
+        return PageResponse.of(fieldRepository.findAllByUserIdOrderByOrder(userId, pageable)
+                        .map(fieldReadMapper::map));
     }
 
     @Transactional

@@ -5,8 +5,6 @@ import by.dudko.questionnaires.mapper.Mapper;
 import by.dudko.questionnaires.model.Field;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-
 @Component
 public class FieldReadMapper implements Mapper<Field, FieldReadDto> {
     @Override
@@ -15,7 +13,7 @@ public class FieldReadMapper implements Mapper<Field, FieldReadDto> {
                 .id(source.getId())
                 .label(source.getLabel())
                 .type(source.getType())
-                .options(Arrays.asList(source.getOptions()))
+                .options(source.getOptions())
                 .isRequired(source.isRequired())
                 .isActive(source.isActive())
                 .build();
