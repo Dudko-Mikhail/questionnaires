@@ -13,7 +13,4 @@ public class UserChangePasswordDto {
 
     @NotEmpty
     String newPassword;
-
-    @NotEmpty
-    String newPasswordRepeat;
 }
