@@ -12,7 +12,24 @@ spring:
         show_sql: true
         format_sql: true
 
-app.jwt:
-  secret: 26452948404D6351665468576D5A7134743777217A25432A462D4A614E645267
-  live-time: 7200000
-  issuer: Questionnaires App
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: noreplyquestionnaireapp@gmail.com
+    password: szinzpuudliibyyu
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+
+  data:
+    web:
+      pageable:
+        default-page-size: 4
+        one-indexed-parameters: true
+app:
+  jwt:
+    secret: 26452948404D6351665468576D5A7134743777217A25432A462D4A614E645267
+    live-time: 720000000
+    issuer: Questionnaires App
+  front.url: http://localhost:4200
+  server.url: http://localhost:8080
