@@ -11,15 +11,19 @@ import by.dudko.questionnaires.dto.user.UserReadDto;
 import by.dudko.questionnaires.mapper.impl.user.UserCreateMapper;
 import by.dudko.questionnaires.mapper.impl.user.UserEditMapper;
 import by.dudko.questionnaires.mapper.impl.user.UserReadMapper;
+import by.dudko.questionnaires.model.User;
 import by.dudko.questionnaires.repository.UserRepository;
+import by.dudko.questionnaires.service.EmailService;
 import by.dudko.questionnaires.service.UserService;
 import by.dudko.questionnaires.util.JwtUtils;
+import by.dudko.questionnaires.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,14 +39,20 @@ public class UserServiceImpl implements UserService {
     private final UserCreateMapper userCreateMapper;
     private final UserEditMapper userEditMapper;
     private final AuthenticationManager authenticationManager;
+    private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
+    private final EmailService emailService;
 
     @Override
-    public PageResponse<UserReadDto> findAll(int page, int size) {
-        return PageResponse.of(
-                userRepository.findAll(PageRequest.of(page, size))
-                        .map(userReadMapper::map)
-        );
+    public Optional<UserReadDto> findById(long id) {
+        return userRepository.findById(id)
+                .map(userReadMapper::map);
+    }
+
+    @Override
+    public PageResponse<UserReadDto> findAll(Pageable pageable) {
+        return PageResponse.of(userRepository.findAll(pageable)
+                        .map(userReadMapper::map));
     }
 
     @Override
@@ -52,23 +62,23 @@ public class UserServiceImpl implements UserService {
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        return new AuthenticationResponse(jwtUtils.generateToken(userDetails));
+        return AuthenticationResponse.of(jwtUtils.generateToken(userDetails), userDetails.getId());
     }
 
     @Transactional
     @Override
-    public UserReadDto save(UserCreateDto createDto) {
-        return Optional.of(createDto)
+    public void signUp(UserCreateDto createDto) {
+        User user = Optional.of(createDto)
                 .map(userCreateMapper::map)
                 .map(userRepository::saveAndFlush)
-                .map(userReadMapper::map)
                 .orElseThrow(NoSuchElementException::new);
+        emailService.sendEmailVerificationMessage(user.getId(), user.getEmail(), generateVerificationCode(user));
     }
 
     @Transactional
     @Override
-    public Optional<UserReadDto> update(long userId, UserEditDto editDto) {
-        return userRepository.findById(userId)
+    public Optional<UserReadDto> update(UserEditDto editDto) {
+        return userRepository.findById(editDto.getId())
                 .map(user -> {
                     userEditMapper.map(editDto, user);
                     return userReadMapper.map(user);
@@ -77,8 +87,44 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public boolean changePassword(UserChangePasswordDto changePasswordDto) {
+    public boolean changePassword(long userId, UserChangePasswordDto changePasswordDto) {
+        return userRepository.findById(userId)
+                .map(user -> {
+                    if (!passwordEncoder.matches(changePasswordDto.getOldPassword(), user.getPassword())) {
+                        return false;
+                    }
+                    user.setPassword(passwordEncoder.encode(changePasswordDto.getNewPassword()));
+                    return true;
+                })
+                .orElseThrow(() -> new UserNotFoundException(userId));
+    }
 
-        return false;
+    @Transactional
+    @Override
+    public boolean activateAccount(long userId, String verificationCode) {
+        return userRepository.findById(userId)
+                .map(user -> {
+                    if (isVerificationCodeValid(user, verificationCode)) {
+                        user.setActivated(true);
+                        return true;
+                    }
+                    return false;
+                }).orElseThrow(() -> new UserNotFoundException(userId));
+    }
+
+    @Override
+    public String generateVerificationCode(User user) {
+        String rawCode = buildRawCode(user);
+        return passwordEncoder.encode(rawCode);
+    }
+
+    @Override
+    public boolean isVerificationCodeValid(User user, String verificationCode) {
+        String rawCode = buildRawCode(user);
+        return passwordEncoder.matches(rawCode, verificationCode);
+    }
+
+    private String buildRawCode(User user) {
+        return String.format("%d:%s:%s:%1$d", user.getId(), user.getEmail(), user.getPassword());
     }
 }
