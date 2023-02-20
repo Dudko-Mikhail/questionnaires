@@ -4,7 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Value;
 
 @Value
-@AllArgsConstructor
+@AllArgsConstructor(staticName = "of")
 public class AuthenticationResponse {
     String token;
+    long userId;
 }

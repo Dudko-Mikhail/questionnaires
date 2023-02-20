@@ -18,13 +18,14 @@ public class UserDetailsImpl implements UserDetails {
     private final long id;
     private final String email;
     private final String password;
-    private final String phoneNumber;
+    private final boolean enabled;
 
     public static UserDetailsImpl of(User user) {
         return builder()
                 .id(user.getId())
                 .email(user.getEmail())
                 .password(user.getPassword())
+                .enabled(user.isActivated())
                 .build();
     }
 
@@ -60,6 +61,6 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return enabled;
     }
 }

@@ -7,17 +7,27 @@ import by.dudko.questionnaires.dto.user.UserChangePasswordDto;
 import by.dudko.questionnaires.dto.user.UserCreateDto;
 import by.dudko.questionnaires.dto.user.UserEditDto;
 import by.dudko.questionnaires.dto.user.UserReadDto;
+import by.dudko.questionnaires.model.User;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
 
 public interface UserService {
-    PageResponse<UserReadDto> findAll(int page, int size);
+    Optional<UserReadDto> findById(long id);
+
+    PageResponse<UserReadDto> findAll(Pageable pageable);
 
     AuthenticationResponse login(Credentials credentials);
 
-    UserReadDto save(UserCreateDto createDto);
+    void signUp(UserCreateDto createDto);
 
-    Optional<UserReadDto> update(long userId, UserEditDto editDto);
+    Optional<UserReadDto> update(UserEditDto editDto);
 
-    boolean changePassword(UserChangePasswordDto changePasswordDto);
+    boolean changePassword(long userId, UserChangePasswordDto changePasswordDto);
+
+    boolean activateAccount(long userId, String verificationCode);
+
+    String generateVerificationCode(User user);
+
+    boolean isVerificationCodeValid(User user, String verificationCode);
 }

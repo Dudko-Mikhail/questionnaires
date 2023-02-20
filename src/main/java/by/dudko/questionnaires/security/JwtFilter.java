@@ -30,7 +30,8 @@ public class JwtFilter extends OncePerRequestFilter {
             chain.doFilter(request, response);
             return;
         }
-        if (jwtUtils.isTokenValid(jwtToken) && SecurityContextHolder.getContext().getAuthentication() == null) {
+        System.out.printf("Context is null: %b%n", SecurityContextHolder.getContext().getAuthentication() == null);
+        if (jwtUtils.isTokenValid(jwtToken)) {
             Authentication authentication = buildAuthentication(jwtToken, request);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
