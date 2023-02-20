@@ -39,7 +39,7 @@ public class User {
     @Builder.Default
     private List<Field> fields = new ArrayList<>();
 
-//    @OneToMany(mappedBy = "questionnaireOwner")
-//    @Builder.Default
-//    private List<Response> responses = new ArrayList<>();
+    @OneToMany(mappedBy = "questionnaireOwner")
+    @Builder.Default
+    private List<Response> responses = new ArrayList<>();
 }
