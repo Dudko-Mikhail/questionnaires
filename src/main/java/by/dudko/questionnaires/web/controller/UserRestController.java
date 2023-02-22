@@ -1,5 +1,6 @@
 package by.dudko.questionnaires.web.controller;
 
+import by.dudko.questionnaires.dto.MessageRequest;
 import by.dudko.questionnaires.dto.PageResponse;
 import by.dudko.questionnaires.dto.error.ErrorResponse;
 import by.dudko.questionnaires.dto.user.UserChangePasswordDto;
@@ -42,7 +43,7 @@ public class UserRestController {
         return userService.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
-
+    
     @PostMapping("/{id}/verification")
     public ResponseEntity<Object> activateAccount(@PathVariable long id,
                                                   @RequestParam("code") String verificationCode) {
@@ -57,5 +58,10 @@ public class UserRestController {
 
         return userService.changePassword(id, changePasswordDto) ? ResponseEntity.noContent().build()
                 : ResponseEntity.badRequest().body(ErrorResponse.of("Old password is invalid"));
+    }
+
+    @PostMapping("/verification-message")
+    public void sendVerificationMessage(@RequestBody @Validated MessageRequest messageRequest) {
+        this.userService.sendEmailVerificationMessage(messageRequest.getEmail());
     }
 }

@@ -8,6 +8,7 @@ import by.dudko.questionnaires.dto.user.UserCreateDto;
 import by.dudko.questionnaires.dto.user.UserDetailsImpl;
 import by.dudko.questionnaires.dto.user.UserEditDto;
 import by.dudko.questionnaires.dto.user.UserReadDto;
+import by.dudko.questionnaires.exception.UserNotFoundException;
 import by.dudko.questionnaires.mapper.impl.user.UserCreateMapper;
 import by.dudko.questionnaires.mapper.impl.user.UserEditMapper;
 import by.dudko.questionnaires.mapper.impl.user.UserReadMapper;
@@ -16,7 +17,6 @@ import by.dudko.questionnaires.repository.UserRepository;
 import by.dudko.questionnaires.service.EmailService;
 import by.dudko.questionnaires.service.UserService;
 import by.dudko.questionnaires.util.JwtUtils;
-import by.dudko.questionnaires.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -44,15 +44,15 @@ public class UserServiceImpl implements UserService {
     private final EmailService emailService;
 
     @Override
-    public Optional<UserReadDto> findById(long id) {
-        return userRepository.findById(id)
+    public Optional<UserReadDto> findById(long userId) {
+        return userRepository.findById(userId)
                 .map(userReadMapper::map);
     }
 
     @Override
     public PageResponse<UserReadDto> findAll(Pageable pageable) {
         return PageResponse.of(userRepository.findAll(pageable)
-                        .map(userReadMapper::map));
+                .map(userReadMapper::map));
     }
 
     @Override
@@ -110,6 +110,15 @@ public class UserServiceImpl implements UserService {
                     }
                     return false;
                 }).orElseThrow(() -> new UserNotFoundException(userId));
+    }
+
+    @Override
+    public void sendEmailVerificationMessage(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("User with email: " + email + " not found"));
+        if (!user.isActivated()) {
+            emailService.sendEmailVerificationMessage(user.getId(), email, generateVerificationCode(user));
+        }
     }
 
     @Override

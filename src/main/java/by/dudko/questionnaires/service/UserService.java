@@ -13,7 +13,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.Optional;
 
 public interface UserService {
-    Optional<UserReadDto> findById(long id);
+    Optional<UserReadDto> findById(long userId);
 
     PageResponse<UserReadDto> findAll(Pageable pageable);
 
@@ -26,6 +26,8 @@ public interface UserService {
     boolean changePassword(long userId, UserChangePasswordDto changePasswordDto);
 
     boolean activateAccount(long userId, String verificationCode);
+
+    void sendEmailVerificationMessage(String email);
 
     String generateVerificationCode(User user);
 
