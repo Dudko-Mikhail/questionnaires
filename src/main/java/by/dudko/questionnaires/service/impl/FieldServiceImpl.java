@@ -53,10 +53,10 @@ public class FieldServiceImpl implements FieldService {
 
     @Transactional
     @Override
-    public boolean deleteById(long id) {
-        return fieldRepository.findById(id)
+    public boolean deleteById(long fieldId) {
+        return fieldRepository.findById(fieldId)
                 .map(field -> {
-                    fieldRepository.deleteById(id);
+                    fieldRepository.deleteById(fieldId);
                     return true;
                 })
                 .orElse(false);

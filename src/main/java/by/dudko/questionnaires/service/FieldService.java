@@ -14,5 +14,5 @@ public interface FieldService {
 
     Optional<FieldReadDto> update(long fieldId, FieldCreateEditDto createEditDto);
 
-    boolean deleteById(long id);
+    boolean deleteById(long fieldId);
 }
