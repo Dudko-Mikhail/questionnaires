@@ -32,7 +32,7 @@ public class SecurityConfiguration {
                 .and()
                 .authorizeHttpRequests()
                 .antMatchers("/api/auth/**", "/api/users/{id}/verification",
-                        "/api/users/verification-message").permitAll()
+                        "/api/users/verification-message", "/api/fields/types").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement()

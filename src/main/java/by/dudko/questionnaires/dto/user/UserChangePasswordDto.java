@@ -9,7 +9,7 @@ import javax.validation.constraints.NotEmpty;
 @Builder
 public class UserChangePasswordDto {
     @NotEmpty
-    String oldPassword;
+    String currentPassword;
 
     @NotEmpty
     String newPassword;

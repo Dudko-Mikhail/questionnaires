@@ -75,6 +75,7 @@ public class UserServiceImpl implements UserService {
         emailService.sendEmailVerificationMessage(user.getId(), user.getEmail(), generateVerificationCode(user));
     }
 
+
     @Transactional
     @Override
     public Optional<UserReadDto> update(UserEditDto editDto) {
@@ -90,7 +91,7 @@ public class UserServiceImpl implements UserService {
     public boolean changePassword(long userId, UserChangePasswordDto changePasswordDto) {
         return userRepository.findById(userId)
                 .map(user -> {
-                    if (!passwordEncoder.matches(changePasswordDto.getOldPassword(), user.getPassword())) {
+                    if (!passwordEncoder.matches(changePasswordDto.getCurrentPassword(), user.getPassword())) {
                         return false;
                     }
                     user.setPassword(passwordEncoder.encode(changePasswordDto.getNewPassword()));
