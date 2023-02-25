@@ -1,7 +1,7 @@
 package by.dudko.questionnaires.dto.field;
 
-import by.dudko.questionnaires.model.Field;
-import by.dudko.questionnaires.validation.annotation.ValueOfEnum;
+import by.dudko.questionnaires.model.FieldType;
+import by.dudko.questionnaires.validation.annotation.FieldUniqueness;
 import lombok.Builder;
 import lombok.Value;
 import org.hibernate.validator.constraints.Length;
@@ -15,7 +15,6 @@ import java.util.Set;
 @Builder
 public class FieldCreateEditDto {
     @PositiveOrZero
-    @NotNull
     Integer order;
 
     @NotEmpty
@@ -23,7 +22,7 @@ public class FieldCreateEditDto {
     String label;
 
     @NotNull
-    @ValueOfEnum(enumClass = Field.Type.class)
+    @FieldUniqueness(fieldName = "value", entityClass = FieldType.class, isUnique = false)
     String type;
 
     Set<String> options;

@@ -12,7 +12,7 @@ public class FieldReadMapper implements Mapper<Field, FieldReadDto> {
         return FieldReadDto.builder()
                 .id(source.getId())
                 .label(source.getLabel())
-                .type(source.getType())
+                .type(source.getType().getValue())
                 .options(source.getOptions())
                 .isRequired(source.isRequired())
                 .isActive(source.isActive())

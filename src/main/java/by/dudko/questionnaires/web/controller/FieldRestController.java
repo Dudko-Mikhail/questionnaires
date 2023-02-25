@@ -14,11 +14,14 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
 
 @CrossOrigin
 @RestController
@@ -33,6 +36,11 @@ public class FieldRestController {
         return fieldService.findAllByUserId(userId, pageable);
     }
 
+    @GetMapping("/fields/types")
+    public List<String> findAllFieldTypes() {
+        return this.fieldService.findAllFieldTypes();
+    }
+
     @ResponseStatus(code = HttpStatus.CREATED)
     @PostMapping("/users/{id}/fields")
     @PreAuthorize("principal.id == #userId")
@@ -41,8 +49,7 @@ public class FieldRestController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
-    @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    @PostMapping("/fields/{id}")
+    @PutMapping("/fields/{id}")
     public FieldReadDto updateField(@PathVariable long id, @RequestBody @Validated FieldCreateEditDto createEditDto) { // todo security check
         return fieldService.update(id, createEditDto)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
