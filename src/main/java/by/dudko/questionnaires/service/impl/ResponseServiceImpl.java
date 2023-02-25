@@ -22,7 +22,7 @@ public class ResponseServiceImpl implements ResponseService {
     @Override
     public PageResponse<ResponseDto> findAllByUserId(long userId, Pageable pageable) {
         return PageResponse.of(responseRepository.findAllByQuestionnaireOwnerId(userId, pageable)
-                        .map(ResponseDto::of));
+                .map(ResponseDto::of));
     }
 
     @Override

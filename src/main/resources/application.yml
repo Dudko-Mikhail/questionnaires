@@ -31,5 +31,4 @@ app:
     secret: 26452948404D6351665468576D5A7134743777217A25432A462D4A614E645267
     live-time: 720000000
     issuer: Questionnaires App
-  front.url: http://localhost:4200
   server.url: http://localhost:8080

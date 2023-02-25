@@ -28,8 +28,7 @@ public class AuthRestController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/sign-up")
-    public String signUp(@RequestBody @Validated UserCreateDto createDto) {
+    public void signUp(@RequestBody @Validated UserCreateDto createDto) {
         userService.signUp(createDto);
-        return "Verification message has been sent to your email: " + createDto.getEmail();
     }
 }

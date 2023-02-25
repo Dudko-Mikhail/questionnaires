@@ -45,7 +45,7 @@ public class FieldUniquenessValidator implements ConstraintValidator<FieldUnique
             }
             context.buildConstraintViolationWithTemplate("Invalid field value")
                     .addConstraintViolation();
-            return  !isAbsent;
+            return !isAbsent;
         } finally {
             entityManager.close();
         }

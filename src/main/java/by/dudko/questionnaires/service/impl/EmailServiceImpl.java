@@ -67,8 +67,7 @@ public class EmailServiceImpl implements EmailService {
             message.setContent(content, CONTENT_TYPE);
             Thread thread = new Thread(() -> sender.send(message));
             thread.start();
-        }
-        catch (MessagingException e) {
+        } catch (MessagingException e) {
             log.error(String.format("Failed to send the message to %s", recipient), e);
         }
     }

@@ -33,7 +33,7 @@ public class FieldServiceImpl implements FieldService {
     @Override
     public PageResponse<FieldReadDto> findAllByUserId(long userId, Pageable pageable) {
         return PageResponse.of(fieldRepository.findAllByUserIdOrderByOrder(userId, pageable)
-                        .map(fieldReadMapper::map));
+                .map(fieldReadMapper::map));
     }
 
     @Override
