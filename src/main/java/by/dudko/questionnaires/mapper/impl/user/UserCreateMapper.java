@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 @Component
 @RequiredArgsConstructor
 public class UserCreateMapper implements Mapper<UserCreateDto, User> {
@@ -20,6 +22,7 @@ public class UserCreateMapper implements Mapper<UserCreateDto, User> {
                 .firstName(source.getFirstName())
                 .lastName(source.getLastName())
                 .password(passwordEncoder.encode(source.getPassword()))
+                .verificationCode(UUID.randomUUID())
                 .build();
     }
 }

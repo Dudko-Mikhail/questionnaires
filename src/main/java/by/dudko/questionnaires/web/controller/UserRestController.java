@@ -3,6 +3,7 @@ package by.dudko.questionnaires.web.controller;
 import by.dudko.questionnaires.dto.MessageRequest;
 import by.dudko.questionnaires.dto.PageResponse;
 import by.dudko.questionnaires.dto.error.ErrorResponse;
+import by.dudko.questionnaires.dto.user.ResetPasswordDto;
 import by.dudko.questionnaires.dto.user.UserChangePasswordDto;
 import by.dudko.questionnaires.dto.user.UserReadDto;
 import by.dudko.questionnaires.service.UserService;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -41,24 +41,34 @@ public class UserRestController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
-    @PostMapping("/{id}/verification")
-    public ResponseEntity<Object> activateAccount(@PathVariable long id,
-                                                  @RequestParam("code") String verificationCode) {
-        return userService.activateAccount(id, verificationCode) ? ResponseEntity.noContent().build()
-                : ResponseEntity.badRequest().body(ErrorResponse.of("Invalid verification code"));
+    @PostMapping("/email/verification")
+    public ResponseEntity<Object> activateAccount(@RequestBody String email,
+                                                  @RequestBody String verificationCode) {
+        return userService.activateAccount(email, verificationCode) ? ResponseEntity.noContent().build()
+                : ResponseEntity.badRequest().build();
     }
 
     @PostMapping("/{id}/password")
     @PreAuthorize("principal.id == #id")
     public ResponseEntity<Object> changePassword(@PathVariable long id,
                                                  @RequestBody @Validated UserChangePasswordDto changePasswordDto) {
-
         return userService.changePassword(id, changePasswordDto) ? ResponseEntity.noContent().build()
                 : ResponseEntity.badRequest().body(ErrorResponse.of("Current password is invalid"));
+    }
+
+    @PostMapping("/password/recovery")
+    public ResponseEntity<Object> resetPassword(@RequestBody @Validated ResetPasswordDto resetPasswordDto) {
+        return userService.resetPassword(resetPasswordDto) ? ResponseEntity.noContent().build()
+                : ResponseEntity.badRequest().build();
     }
 
     @PostMapping("/verification-message")
     public void sendVerificationMessage(@RequestBody @Validated MessageRequest messageRequest) {
         this.userService.sendEmailVerificationMessage(messageRequest.getEmail());
+    }
+
+    @PostMapping("/reset-password-message")
+    public void sendResetPasswordMessage(@RequestBody @Validated MessageRequest messageRequest) {
+        this.userService.sendResetPasswordMessage(messageRequest.getEmail());
     }
 }

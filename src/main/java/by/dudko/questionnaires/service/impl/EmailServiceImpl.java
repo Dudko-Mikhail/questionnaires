@@ -6,7 +6,6 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
@@ -27,18 +26,14 @@ public class EmailServiceImpl implements EmailService {
     private final JavaMailSender sender;
     private final Configuration configuration;
 
-    @Value("${app.server.url}")
-    private final String appUrl;
-
     @Override
-    public void sendEmailVerificationMessage(long userId, String recipient, String verificationCode) {
-        String link = String.format("%s/api/users/%d/verification?code=%s", appUrl, userId, verificationCode);
+    public void sendEmailVerificationMessage(String recipient, String verificationCode) {
         try {
             Map<String, Object> model = new HashMap<>();
-            model.put("verificationLink", link);
+            model.put("verificationCode", verificationCode);
             Template template = configuration.getTemplate("confirm_registration.ftl");
             String content = FreeMarkerTemplateUtils.processTemplateIntoString(template, model);
-            sendEmail("Confirm Registration", content, recipient);
+            sendEmail("Confirm registration", content, recipient);
         } catch (IOException | TemplateException e) {
             handleMailExceptions(e);
         }
@@ -52,6 +47,19 @@ public class EmailServiceImpl implements EmailService {
             Template template = configuration.getTemplate("password_changed.ftl");
             String content = FreeMarkerTemplateUtils.processTemplateIntoString(template, model);
             sendEmail("Password change", content, recipient);
+        } catch (IOException | TemplateException e) {
+            handleMailExceptions(e);
+        }
+    }
+
+    @Override
+    public void sendResetPasswordMessage(String recipient, String verificationCode) {
+        try {
+            Map<String, Object> model = new HashMap<>();
+            model.put("verificationCode", verificationCode);
+            Template template = configuration.getTemplate("confirm_registration.ftl");
+            String content = FreeMarkerTemplateUtils.processTemplateIntoString(template, model);
+            sendEmail("Reset password", content, recipient);
         } catch (IOException | TemplateException e) {
             handleMailExceptions(e);
         }

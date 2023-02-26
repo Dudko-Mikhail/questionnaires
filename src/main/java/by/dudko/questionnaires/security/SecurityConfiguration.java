@@ -31,9 +31,11 @@ public class SecurityConfiguration {
                 .cors()
                 .and()
                 .authorizeHttpRequests()
-                .antMatchers("/api/auth/**", "/api/users/{id}/verification", "/api/users/{id}/responses",
-                        "/api/users/verification-message", "/api/fields/types", "/api/users/{id}/fields/all",
-                        "/api/questionnaires").permitAll()
+                .antMatchers("/api/auth/**", "/api/users/{id}/responses",
+                        "/api/users/email/verification", "/api/users/password/recovery",
+                        "/api/users/verification-message", "/api/users/reset-password-message",
+                        "/api/fields/types", "/api/users/{id}/fields/all",
+                        "/api/questionnaires", "/api/users/password").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement()

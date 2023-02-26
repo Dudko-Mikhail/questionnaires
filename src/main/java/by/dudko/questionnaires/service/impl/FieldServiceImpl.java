@@ -39,7 +39,7 @@ public class FieldServiceImpl implements FieldService {
                 .map(fields -> fields.stream()
                         .map(fieldReadMapper::map)
                         .collect(Collectors.toList()))
-                .orElseThrow(() -> new UserNotFoundException(userId));
+                .orElseThrow(() -> UserNotFoundException.of(userId));
 
     }
 

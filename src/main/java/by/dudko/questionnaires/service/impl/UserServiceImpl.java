@@ -3,6 +3,7 @@ package by.dudko.questionnaires.service.impl;
 import by.dudko.questionnaires.dto.PageResponse;
 import by.dudko.questionnaires.dto.auth.AuthenticationResponse;
 import by.dudko.questionnaires.dto.auth.Credentials;
+import by.dudko.questionnaires.dto.user.ResetPasswordDto;
 import by.dudko.questionnaires.dto.user.UserChangePasswordDto;
 import by.dudko.questionnaires.dto.user.UserCreateDto;
 import by.dudko.questionnaires.dto.user.UserDetailsImpl;
@@ -29,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Transactional(readOnly = true)
@@ -72,7 +74,7 @@ public class UserServiceImpl implements UserService {
                 .map(userCreateMapper::map)
                 .map(userRepository::saveAndFlush)
                 .orElseThrow(NoSuchElementException::new);
-        emailService.sendEmailVerificationMessage(user.getId(), user.getEmail(), generateVerificationCode(user));
+        emailService.sendEmailVerificationMessage(user.getEmail(), user.getVerificationCode().toString());
     }
 
 
@@ -95,46 +97,74 @@ public class UserServiceImpl implements UserService {
                         return false;
                     }
                     user.setPassword(passwordEncoder.encode(changePasswordDto.getNewPassword()));
+                    emailService.sendPasswordChangedMessage(user.getEmail());
                     return true;
                 })
-                .orElseThrow(() -> new UserNotFoundException(userId));
+                .orElseThrow(() -> UserNotFoundException.of(userId));
     }
 
     @Transactional
     @Override
-    public boolean activateAccount(long userId, String verificationCode) {
-        return userRepository.findById(userId)
+    public boolean resetPassword(ResetPasswordDto resetPasswordDto) {
+        String email = resetPasswordDto.getEmail();
+        return userRepository.findByEmail(email)
                 .map(user -> {
-                    if (isVerificationCodeValid(user, verificationCode)) {
-                        user.setActivated(true);
-                        return true;
+                    if (isVerificationCodeValid(resetPasswordDto.getVerificationCode(), user)) {
+                        return false;
                     }
-                    return false;
-                }).orElseThrow(() -> new UserNotFoundException(userId));
+                    user.setVerificationCode(null);
+                    user.setPassword(passwordEncoder.encode(resetPasswordDto.getNewPassword()));
+                    emailService.sendPasswordChangedMessage(email);
+                    return true;
+                })
+                .orElseThrow(() -> UserNotFoundException.of(email));
     }
 
+    @Transactional
+    @Override
+    public boolean activateAccount(String email, String verificationCode) {
+        return userRepository.findByEmail(email)
+                .map(user -> {
+                    if (!isVerificationCodeValid(verificationCode, user)) {
+                        return false;
+                    }
+                    user.setActivated(true);
+                    user.setVerificationCode(null);
+                    return true;
+                }).orElseThrow(() -> UserNotFoundException.of(email));
+    }
+
+    @Transactional
     @Override
     public void sendEmailVerificationMessage(String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException("User with email: " + email + " not found"));
-        if (!user.isActivated()) {
-            emailService.sendEmailVerificationMessage(user.getId(), email, generateVerificationCode(user));
+                .orElseThrow(() -> UserNotFoundException.of(email));
+        if (user.isActivated()) {
+            return;
         }
+        UUID verificationCode = UUID.randomUUID();
+        user.setVerificationCode(verificationCode);
+        emailService.sendEmailVerificationMessage(email, verificationCode.toString());
     }
 
+    @Transactional
     @Override
-    public String generateVerificationCode(User user) {
-        String rawCode = buildRawCode(user);
-        return passwordEncoder.encode(rawCode);
+    public void sendResetPasswordMessage(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> UserNotFoundException.of(email));
+        if (!user.isActivated()) {
+            return;
+        }
+        UUID verificationCode = UUID.randomUUID();
+        user.setVerificationCode(verificationCode);
+        emailService.sendResetPasswordMessage(email, verificationCode.toString());
     }
 
-    @Override
-    public boolean isVerificationCodeValid(User user, String verificationCode) {
-        String rawCode = buildRawCode(user);
-        return passwordEncoder.matches(rawCode, verificationCode);
-    }
-
-    private String buildRawCode(User user) {
-        return String.format("%d:%s:%s:%1$d", user.getId(), user.getEmail(), user.getPassword());
+    private boolean isVerificationCodeValid(String verificationCode, User user) {
+        if (user.getVerificationCode() == null) {
+            return false;
+        }
+        String userVerificationCode = user.getVerificationCode().toString();
+        return userVerificationCode.equals(verificationCode);
     }
 }

@@ -1,6 +1,14 @@
 package by.dudko.questionnaires.exception;
 
 public class UserNotFoundException extends RuntimeException {
+    public static UserNotFoundException of(String email) {
+        return new UserNotFoundException("User with email: " + email + " not found");
+    }
+
+    public static UserNotFoundException of(long userId) {
+        return new UserNotFoundException("User with id: " + userId + " not found");
+    }
+
     public UserNotFoundException() {
     }
 
@@ -14,9 +22,5 @@ public class UserNotFoundException extends RuntimeException {
 
     public UserNotFoundException(Throwable cause) {
         super(cause);
-    }
-
-    public UserNotFoundException(long userId) {
-        super("User with id: " + userId + " not found");
     }
 }

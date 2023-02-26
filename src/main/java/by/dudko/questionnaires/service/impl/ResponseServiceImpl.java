@@ -35,6 +35,6 @@ public class ResponseServiceImpl implements ResponseService {
                 })
                 .map(responseRepository::saveAndFlush)
                 .map(ResponseDto::of)
-                .orElseThrow(() -> new UserNotFoundException(userId));
+                .orElseThrow(() -> UserNotFoundException.of(userId));
     }
 }

@@ -15,6 +15,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "users")
@@ -34,6 +35,7 @@ public class User {
     private String lastName;
     private String password;
     private boolean isActivated;
+    private UUID verificationCode;
 
     @OneToMany(mappedBy = "user")
     @Builder.Default
