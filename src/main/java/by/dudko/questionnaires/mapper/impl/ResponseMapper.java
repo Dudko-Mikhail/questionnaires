@@ -10,7 +10,7 @@ public class ResponseMapper implements Mapper<ResponseDto, Response> {
     @Override
     public Response map(ResponseDto source) {
         return Response.builder()
-                .id(source.getId())
+                .id(source.getId() != null ? source.getId() : -1)
                 .answers(source.getAnswer())
                 .build();
     }
