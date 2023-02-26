@@ -16,7 +16,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -40,7 +39,7 @@ public class Field {
     private int order;
     private String label;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "type_id", referencedColumnName = "id")
     private FieldType type;
 
