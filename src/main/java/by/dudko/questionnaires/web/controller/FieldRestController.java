@@ -30,9 +30,14 @@ import java.util.List;
 public class FieldRestController {
     private final FieldService fieldService;
 
+    @GetMapping("/users/{id}/fields/all")
+    public List<FieldReadDto> findAll(@PathVariable long id) { // todo refactor this
+        return fieldService.findAllByUserId(id);
+    }
+
     @GetMapping("/users/{id}/fields")
     @PreAuthorize("principal.id == #userId")
-    public PageResponse<FieldReadDto> findUserFields(@PathVariable("id") long userId, Pageable pageable) {
+    public PageResponse<FieldReadDto> findByUserId(@PathVariable("id") long userId, Pageable pageable) {
         return fieldService.findAllByUserId(userId, pageable);
     }
 
@@ -50,14 +55,16 @@ public class FieldRestController {
     }
 
     @PutMapping("/fields/{id}")
-    public FieldReadDto updateField(@PathVariable long id, @RequestBody @Validated FieldCreateEditDto createEditDto) { // todo security check
+    @PreAuthorize("@fieldRepository.isFieldOwner(principal.id, #id)")
+    public FieldReadDto updateField(@PathVariable long id, @RequestBody @Validated FieldCreateEditDto createEditDto) {
         return fieldService.update(id, createEditDto)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     @DeleteMapping("/fields/{id}")
-    public void deleteById(@PathVariable("id") long id) { // todo security check
+    @PreAuthorize("@fieldRepository.isFieldOwner(principal.id, #id)")
+    public void deleteById(@PathVariable("id") long id) {
         if (!fieldService.deleteById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }

@@ -12,4 +12,7 @@ public interface FieldRepository extends JpaRepository<Field, Long> {
 
     @Query("select coalesce(max(f.order), 0) from Field f where f.user.id = :userId")
     int findMaxOrderByUserId(@Param(value = "userId") long userId);
+
+    @Query("select count(f.id) <> 0 from Field f where f.id = :fieldId and f.user.id = :userId")
+    boolean isFieldOwner(@Param(value = "userId") long userId, @Param(value = "fieldId") long fieldId);
 }

@@ -31,8 +31,8 @@ public class SecurityConfiguration {
                 .cors()
                 .and()
                 .authorizeHttpRequests()
-                .antMatchers("/api/auth/**", "/api/users/{id}/verification",
-                        "/api/users/verification-message", "/api/fields/types").permitAll()
+                .antMatchers("/api/auth/**", "/api/users/{id}/verification", "/api/users/{id}/responses",
+                        "/api/users/verification-message", "/api/fields/types", "/api/users/{id}/fields/all").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement()

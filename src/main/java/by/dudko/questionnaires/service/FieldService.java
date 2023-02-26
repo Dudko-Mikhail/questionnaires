@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface FieldService {
+    List<FieldReadDto> findAllByUserId(long userId);
+
     PageResponse<FieldReadDto> findAllByUserId(long userId, Pageable pageable);
 
     Optional<FieldReadDto> save(long userId, FieldCreateEditDto createEditDto);
