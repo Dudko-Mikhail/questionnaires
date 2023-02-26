@@ -32,7 +32,8 @@ public class SecurityConfiguration {
                 .and()
                 .authorizeHttpRequests()
                 .antMatchers("/api/auth/**", "/api/users/{id}/verification", "/api/users/{id}/responses",
-                        "/api/users/verification-message", "/api/fields/types", "/api/users/{id}/fields/all").permitAll()
+                        "/api/users/verification-message", "/api/fields/types", "/api/users/{id}/fields/all",
+                        "/api/questionnaires").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement()
