@@ -30,13 +30,7 @@ import java.util.List;
 public class FieldRestController {
     private final FieldService fieldService;
 
-    @GetMapping("/users/{id}/fields/all")
-    public List<FieldReadDto> findAll(@PathVariable long id) { // todo refactor this
-        return fieldService.findAllByUserId(id);
-    }
-
     @GetMapping("/users/{id}/fields")
-    @PreAuthorize("principal.id == #userId")
     public PageResponse<FieldReadDto> findByUserId(@PathVariable("id") long userId, Pageable pageable) {
         return fieldService.findAllByUserId(userId, pageable);
     }

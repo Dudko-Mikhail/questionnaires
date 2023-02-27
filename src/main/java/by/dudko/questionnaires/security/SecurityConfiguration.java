@@ -34,7 +34,7 @@ public class SecurityConfiguration {
                 .antMatchers("/api/auth/**", "/api/users/{id}/responses",
                         "/api/users/email/verification", "/api/users/password/recovery", "/api/users/verification-code",
                         "/api/users/verification-message", "/api/users/reset-password-message",
-                        "/api/fields/types", "/api/users/{id}/fields/all",
+                        "/api/fields/types", "/api/users/{id}/fields", "/ws/**",
                         "/api/questionnaires", "/api/users/password").permitAll()
                 .anyRequest().authenticated()
                 .and()
