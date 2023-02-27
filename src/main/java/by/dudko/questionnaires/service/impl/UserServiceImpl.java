@@ -1,6 +1,7 @@
 package by.dudko.questionnaires.service.impl;
 
 import by.dudko.questionnaires.dto.PageResponse;
+import by.dudko.questionnaires.dto.VerificationDto;
 import by.dudko.questionnaires.dto.auth.AuthenticationResponse;
 import by.dudko.questionnaires.dto.auth.Credentials;
 import by.dudko.questionnaires.dto.user.ResetPasswordDto;
@@ -19,8 +20,10 @@ import by.dudko.questionnaires.service.EmailService;
 import by.dudko.questionnaires.service.UserService;
 import by.dudko.questionnaires.util.JwtUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -32,6 +35,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -109,7 +113,11 @@ public class UserServiceImpl implements UserService {
         String email = resetPasswordDto.getEmail();
         return userRepository.findByEmail(email)
                 .map(user -> {
-                    if (isVerificationCodeValid(resetPasswordDto.getVerificationCode(), user)) {
+                    if (!user.isActivated()) {
+                        log.warn("Attempt to reset password in disable account. Email: " + email);
+                        throw new DisabledException("User account is disabled");
+                    }
+                    if (!isVerificationCodeValid(resetPasswordDto.getVerificationCode(), user)) {
                         return false;
                     }
                     user.setVerificationCode(null);
@@ -120,12 +128,21 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> UserNotFoundException.of(email));
     }
 
+    @Override
+    public boolean isVerificationCodeValid(VerificationDto verificationDto) {
+        String email = verificationDto.getEmail();
+        return userRepository.findByEmail(email)
+                .map(user -> isVerificationCodeValid(verificationDto.getVerificationCode(), user))
+                .orElseThrow(() -> UserNotFoundException.of(email));
+    }
+
     @Transactional
     @Override
-    public boolean activateAccount(String email, String verificationCode) {
+    public boolean activateAccount(VerificationDto verificationDto) {
+        String email = verificationDto.getEmail();
         return userRepository.findByEmail(email)
                 .map(user -> {
-                    if (!isVerificationCodeValid(verificationCode, user)) {
+                    if (!isVerificationCodeValid(verificationDto.getVerificationCode(), user)) {
                         return false;
                     }
                     user.setActivated(true);

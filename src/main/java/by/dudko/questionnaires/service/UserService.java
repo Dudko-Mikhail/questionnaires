@@ -1,6 +1,7 @@
 package by.dudko.questionnaires.service;
 
 import by.dudko.questionnaires.dto.PageResponse;
+import by.dudko.questionnaires.dto.VerificationDto;
 import by.dudko.questionnaires.dto.auth.AuthenticationResponse;
 import by.dudko.questionnaires.dto.auth.Credentials;
 import by.dudko.questionnaires.dto.user.ResetPasswordDto;
@@ -27,7 +28,9 @@ public interface UserService {
 
     boolean resetPassword(ResetPasswordDto resetPasswordDto);
 
-    boolean activateAccount(String email, String verificationCode);
+    boolean isVerificationCodeValid(VerificationDto verificationDto);
+
+    boolean activateAccount(VerificationDto verificationDto);
 
     void sendEmailVerificationMessage(String email);
 

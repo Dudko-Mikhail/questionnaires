@@ -57,7 +57,7 @@ public class EmailServiceImpl implements EmailService {
         try {
             Map<String, Object> model = new HashMap<>();
             model.put("verificationCode", verificationCode);
-            Template template = configuration.getTemplate("confirm_registration.ftl");
+            Template template = configuration.getTemplate("reset_password.ftl");
             String content = FreeMarkerTemplateUtils.processTemplateIntoString(template, model);
             sendEmail("Reset password", content, recipient);
         } catch (IOException | TemplateException e) {

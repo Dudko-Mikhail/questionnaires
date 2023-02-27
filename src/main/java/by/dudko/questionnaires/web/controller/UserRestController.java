@@ -2,6 +2,7 @@ package by.dudko.questionnaires.web.controller;
 
 import by.dudko.questionnaires.dto.MessageRequest;
 import by.dudko.questionnaires.dto.PageResponse;
+import by.dudko.questionnaires.dto.VerificationDto;
 import by.dudko.questionnaires.dto.error.ErrorResponse;
 import by.dudko.questionnaires.dto.user.ResetPasswordDto;
 import by.dudko.questionnaires.dto.user.UserChangePasswordDto;
@@ -42,10 +43,14 @@ public class UserRestController {
     }
 
     @PostMapping("/email/verification")
-    public ResponseEntity<Object> activateAccount(@RequestBody String email,
-                                                  @RequestBody String verificationCode) {
-        return userService.activateAccount(email, verificationCode) ? ResponseEntity.noContent().build()
+    public ResponseEntity<Object> activateAccount(@RequestBody @Validated VerificationDto verificationDto) {
+        return userService.activateAccount(verificationDto) ? ResponseEntity.noContent().build()
                 : ResponseEntity.badRequest().build();
+    }
+
+    @PostMapping("/verification-code")
+    public boolean isVerificationCodeValid(@RequestBody @Validated VerificationDto verificationDto) {
+        return userService.isVerificationCodeValid(verificationDto);
     }
 
     @PostMapping("/{id}/password")
