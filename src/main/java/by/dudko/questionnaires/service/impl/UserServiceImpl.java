@@ -10,7 +10,8 @@ import by.dudko.questionnaires.dto.user.UserCreateDto;
 import by.dudko.questionnaires.dto.user.UserDetailsImpl;
 import by.dudko.questionnaires.dto.user.UserEditDto;
 import by.dudko.questionnaires.dto.user.UserReadDto;
-import by.dudko.questionnaires.exception.UserNotFoundException;
+import by.dudko.questionnaires.exception.EntityNotFoundException;
+import by.dudko.questionnaires.exception.UniqueConstraintViolationException;
 import by.dudko.questionnaires.mapper.impl.user.UserCreateMapper;
 import by.dudko.questionnaires.mapper.impl.user.UserEditMapper;
 import by.dudko.questionnaires.mapper.impl.user.UserReadMapper;
@@ -50,9 +51,10 @@ public class UserServiceImpl implements UserService {
     private final EmailService emailService;
 
     @Override
-    public Optional<UserReadDto> findById(long userId) {
+    public UserReadDto findById(long userId) {
         return userRepository.findById(userId)
-                .map(userReadMapper::map);
+                .map(userReadMapper::map)
+                .orElseThrow(() -> EntityNotFoundException.of(User.class, "id", Long.toString(userId)));
     }
 
     @Override
@@ -84,12 +86,16 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public Optional<UserReadDto> update(UserEditDto editDto) {
-        return userRepository.findById(editDto.getId())
+    public UserReadDto update(long userId, UserEditDto editDto) {
+        return userRepository.findById(userId)
                 .map(user -> {
+                    if (!userRepository.isEmailUniqueExceptUserWithId(editDto.getEmail(), userId)) {
+                        throw UniqueConstraintViolationException.of("email", editDto.getEmail());
+                    }
                     userEditMapper.map(editDto, user);
                     return userReadMapper.map(user);
-                });
+                })
+                .orElseThrow(() -> EntityNotFoundException.of(User.class, "id", Long.toString(userId)));
     }
 
     @Transactional
@@ -104,7 +110,7 @@ public class UserServiceImpl implements UserService {
                     emailService.sendPasswordChangedMessage(user.getEmail());
                     return true;
                 })
-                .orElseThrow(() -> UserNotFoundException.of(userId));
+                .orElseThrow(() -> EntityNotFoundException.of(User.class, "id", Long.toString(userId)));
     }
 
     @Transactional
@@ -125,7 +131,7 @@ public class UserServiceImpl implements UserService {
                     emailService.sendPasswordChangedMessage(email);
                     return true;
                 })
-                .orElseThrow(() -> UserNotFoundException.of(email));
+                .orElseThrow(() -> EntityNotFoundException.of(User.class, "email", email));
     }
 
     @Override
@@ -133,7 +139,7 @@ public class UserServiceImpl implements UserService {
         String email = verificationDto.getEmail();
         return userRepository.findByEmail(email)
                 .map(user -> isVerificationCodeValid(verificationDto.getVerificationCode(), user))
-                .orElseThrow(() -> UserNotFoundException.of(email));
+                .orElseThrow(() -> EntityNotFoundException.of(User.class, "email", email));
     }
 
     @Transactional
@@ -148,14 +154,14 @@ public class UserServiceImpl implements UserService {
                     user.setActivated(true);
                     user.setVerificationCode(null);
                     return true;
-                }).orElseThrow(() -> UserNotFoundException.of(email));
+                }).orElseThrow(() -> EntityNotFoundException.of(User.class, "email", email));
     }
 
     @Transactional
     @Override
     public void sendEmailVerificationMessage(String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> UserNotFoundException.of(email));
+                .orElseThrow(() -> EntityNotFoundException.of(User.class, "email", email));
         if (user.isActivated()) {
             return;
         }
@@ -168,7 +174,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void sendResetPasswordMessage(String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> UserNotFoundException.of(email));
+                .orElseThrow(() -> EntityNotFoundException.of(User.class, "email", email));
         if (!user.isActivated()) {
             return;
         }

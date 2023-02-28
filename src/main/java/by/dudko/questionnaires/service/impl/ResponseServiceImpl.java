@@ -2,9 +2,10 @@ package by.dudko.questionnaires.service.impl;
 
 import by.dudko.questionnaires.dto.PageResponse;
 import by.dudko.questionnaires.dto.ResponseDto;
-import by.dudko.questionnaires.exception.UserNotFoundException;
+import by.dudko.questionnaires.exception.EntityNotFoundException;
 import by.dudko.questionnaires.mapper.impl.ResponseMapper;
 import by.dudko.questionnaires.model.Response;
+import by.dudko.questionnaires.model.User;
 import by.dudko.questionnaires.repository.ResponseRepository;
 import by.dudko.questionnaires.repository.UserRepository;
 import by.dudko.questionnaires.service.ResponseService;
@@ -35,6 +36,6 @@ public class ResponseServiceImpl implements ResponseService {
                 })
                 .map(responseRepository::saveAndFlush)
                 .map(ResponseDto::of)
-                .orElseThrow(() -> UserNotFoundException.of(userId));
+                .orElseThrow(() -> EntityNotFoundException.of(User.class, "id", Long.toString(userId)));
     }
 }

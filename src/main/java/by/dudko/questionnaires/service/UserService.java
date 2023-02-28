@@ -11,10 +11,8 @@ import by.dudko.questionnaires.dto.user.UserEditDto;
 import by.dudko.questionnaires.dto.user.UserReadDto;
 import org.springframework.data.domain.Pageable;
 
-import java.util.Optional;
-
 public interface UserService {
-    Optional<UserReadDto> findById(long userId);
+    UserReadDto findById(long userId);
 
     PageResponse<UserReadDto> findAll(Pageable pageable);
 
@@ -22,7 +20,7 @@ public interface UserService {
 
     void signUp(UserCreateDto createDto);
 
-    Optional<UserReadDto> update(UserEditDto editDto);
+    UserReadDto update(long userId, UserEditDto editDto);
 
     boolean changePassword(long userId, UserChangePasswordDto changePasswordDto);
 

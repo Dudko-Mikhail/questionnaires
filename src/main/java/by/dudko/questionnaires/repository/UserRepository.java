@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
@@ -22,4 +23,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
                     "         LEFT JOIN fields f ON u.id = f.user_id\n" +
                     "GROUP BY u.id")
     Page<Questionnaire> findAllQuestionnaires(Pageable pageable);
+
+    @Query(value = "select count(u) = 0 from User u where u.id <> :userId and u.email = :email")
+    boolean isEmailUniqueExceptUserWithId(@Param("email") String email, @Param("userId") long userId);
 }

@@ -1,7 +1,8 @@
 package by.dudko.questionnaires.web.handler;
 
 import by.dudko.questionnaires.dto.error.ErrorResponse;
-import by.dudko.questionnaires.exception.UserNotFoundException;
+import by.dudko.questionnaires.exception.EntityNotFoundException;
+import by.dudko.questionnaires.exception.UniqueConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpHeaders;
@@ -35,16 +36,21 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(responseFactory.of(ex), headers, status);
     }
 
-    @ExceptionHandler(UserNotFoundException.class)
-    protected ResponseEntity<Object> handleUserNotFoundException(UserNotFoundException exception) {
-        ErrorResponse errorResponse = ErrorResponse.of(exception.getMessage());
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    @ExceptionHandler(EntityNotFoundException.class)
+    protected ResponseEntity<Object> handleEntityNotFoundException(EntityNotFoundException ex) {
+        ErrorResponse errorResponse = ErrorResponse.of(ex.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(DisabledException.class)
     protected ResponseEntity<Object> handleDisabledException() {
         ErrorResponse errorResponse = ErrorResponse.of("Your account is disabled");
         return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(UniqueConstraintViolationException.class)
+    protected ResponseEntity<Object> handleDisabledException(UniqueConstraintViolationException ex) {
+        return new ResponseEntity<>(responseFactory.of(ex), HttpStatus.BAD_REQUEST);
     }
 }
 

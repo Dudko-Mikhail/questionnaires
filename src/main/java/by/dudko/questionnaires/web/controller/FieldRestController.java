@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -44,23 +43,18 @@ public class FieldRestController {
     @PostMapping("/users/{id}/fields")
     @PreAuthorize("principal.id == #userId")
     public FieldReadDto saveField(@PathVariable("id") long userId, @RequestBody @Validated FieldCreateEditDto createEditDto) {
-        return fieldService.save(userId, createEditDto)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        return fieldService.save(userId, createEditDto);
     }
 
     @PutMapping("/fields/{id}")
     @PreAuthorize("@fieldRepository.isFieldOwner(principal.id, #id)")
     public FieldReadDto updateField(@PathVariable long id, @RequestBody @Validated FieldCreateEditDto createEditDto) {
-        return fieldService.update(id, createEditDto)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        return fieldService.update(id, createEditDto);
     }
 
-    @ResponseStatus(code = HttpStatus.NO_CONTENT)
     @DeleteMapping("/fields/{id}")
     @PreAuthorize("@fieldRepository.isFieldOwner(principal.id, #id)")
     public void deleteById(@PathVariable("id") long id) {
-        if (!fieldService.deleteById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
+        fieldService.deleteById(id);
     }
 }
