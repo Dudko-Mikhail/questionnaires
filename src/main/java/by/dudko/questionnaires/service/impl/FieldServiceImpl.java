@@ -55,7 +55,7 @@ public class FieldServiceImpl implements FieldService {
                     return fieldRepository.save(field);
                 })
                 .map(fieldMapper::map)
-                .orElseThrow(() -> EntityNotFoundException.of(User.class, "id", Long.toString(userId)));
+                .orElseThrow(() -> EntityNotFoundException.of(User.class, Field.Fields.id, Long.toString(userId)));
     }
 
     @Transactional
@@ -68,14 +68,14 @@ public class FieldServiceImpl implements FieldService {
                     fieldMapper.reverseMap(fieldDto, field);
                     return fieldDto;
                 })
-                .orElseThrow(() -> EntityNotFoundException.of(Field.class, "id", Long.toString(fieldId)));
+                .orElseThrow(() -> EntityNotFoundException.of(Field.class, Field.Fields.id, Long.toString(fieldId)));
     }
 
     @Transactional
     @Override
     public void deleteById(long fieldId) {
         Field field = fieldRepository.findById(fieldId)
-                .orElseThrow(() -> EntityNotFoundException.of(Field.class, "id", Long.toString(fieldId)));
+                .orElseThrow(() -> EntityNotFoundException.of(Field.class, Field.Fields.id, Long.toString(fieldId)));
         fieldRepository.delete(field);
     }
 }

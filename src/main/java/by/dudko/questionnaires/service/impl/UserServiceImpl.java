@@ -48,7 +48,7 @@ public class UserServiceImpl implements UserService {
     public UserDto findById(long userId) {
         return userRepository.findById(userId)
                 .map(userMapper::map)
-                .orElseThrow(() -> EntityNotFoundException.of(User.class, "id", Long.toString(userId)));
+                .orElseThrow(() -> EntityNotFoundException.of(User.class, User.Fields.id, Long.toString(userId)));
     }
 
     @Override
@@ -85,12 +85,12 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(userId)
                 .map(user -> {
                     if (!userRepository.isEmailUniqueExceptUserWithId(userDto.getEmail(), userId)) {
-                        throw UniqueConstraintViolationException.of("email", userDto.getEmail());
+                        throw UniqueConstraintViolationException.of(User.Fields.email, userDto.getEmail());
                     }
                     userMapper.reverseMap(userDto, user);
                     return userDto;
                 })
-                .orElseThrow(() -> EntityNotFoundException.of(User.class, "id", Long.toString(userId)));
+                .orElseThrow(() -> EntityNotFoundException.of(User.class, User.Fields.id, Long.toString(userId)));
     }
 
     @Transactional
@@ -105,7 +105,7 @@ public class UserServiceImpl implements UserService {
                     emailService.sendPasswordChangedMessage(user.getEmail());
                     return true;
                 })
-                .orElseThrow(() -> EntityNotFoundException.of(User.class, "id", Long.toString(userId)));
+                .orElseThrow(() -> EntityNotFoundException.of(User.class, User.Fields.id, Long.toString(userId)));
     }
 
     @Transactional
@@ -126,7 +126,7 @@ public class UserServiceImpl implements UserService {
                     emailService.sendPasswordChangedMessage(email);
                     return true;
                 })
-                .orElseThrow(() -> EntityNotFoundException.of(User.class, "email", email));
+                .orElseThrow(() -> EntityNotFoundException.of(User.class, User.Fields.email, email));
     }
 
     @Override
@@ -134,7 +134,7 @@ public class UserServiceImpl implements UserService {
         String email = verificationDto.getEmail();
         return userRepository.findByEmail(email)
                 .map(user -> isVerificationCodeValid(verificationDto.getVerificationCode(), user))
-                .orElseThrow(() -> EntityNotFoundException.of(User.class, "email", email));
+                .orElseThrow(() -> EntityNotFoundException.of(User.class, User.Fields.email, email));
     }
 
     @Transactional
@@ -149,14 +149,14 @@ public class UserServiceImpl implements UserService {
                     user.setActivated(true);
                     user.setVerificationCode(null);
                     return true;
-                }).orElseThrow(() -> EntityNotFoundException.of(User.class, "email", email));
+                }).orElseThrow(() -> EntityNotFoundException.of(User.class, User.Fields.email, email));
     }
 
     @Transactional
     @Override
     public void sendEmailVerificationMessage(String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> EntityNotFoundException.of(User.class, "email", email));
+                .orElseThrow(() -> EntityNotFoundException.of(User.class, User.Fields.email, email));
         if (user.isActivated()) {
             return;
         }
@@ -169,7 +169,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void sendResetPasswordMessage(String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> EntityNotFoundException.of(User.class, "email", email));
+                .orElseThrow(() -> EntityNotFoundException.of(User.class, User.Fields.email, email));
         if (!user.isActivated()) {
             return;
         }
