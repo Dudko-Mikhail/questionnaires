@@ -74,7 +74,7 @@ public class UserServiceImpl implements UserService {
                 .map(userMapper::reverseMap)
                 .map(userRepository::saveAndFlush)
                 .orElseThrow(NoSuchElementException::new);
-        emailService.sendEmailVerificationMessage(user.getEmail(), user.getVerificationCode().toString());
+        this.sendEmailVerificationMessage(user.getEmail());
     }
 
 

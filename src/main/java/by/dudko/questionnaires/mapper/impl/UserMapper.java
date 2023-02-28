@@ -42,7 +42,7 @@ public class UserMapper implements UniversalMapper<User, UserDto> {
         target.setPhoneNumber(source.getPhoneNumber());
         String password = source.getPassword();
         if (password != null) {
-            target.setPassword(passwordEncoder.encode(source.getPassword()));
+            target.setPassword(passwordEncoder.encode(password));
         }
         return target;
     }

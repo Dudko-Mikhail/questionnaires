@@ -4,6 +4,7 @@ import by.dudko.questionnaires.model.User;
 import by.dudko.questionnaires.validation.action.Create;
 import by.dudko.questionnaires.validation.annotation.FieldUniqueness;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
@@ -33,7 +34,7 @@ public class UserDto {
     @Length(max = 32)
     String lastName;
 
-    @JsonIgnore
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @NotEmpty(groups = Create.class)
     String password;
 }
