@@ -87,7 +87,7 @@ public class UserServiceImpl implements UserService {
                     if (!userRepository.isEmailUniqueExceptUserWithId(userDto.getEmail(), userId)) {
                         throw UniqueConstraintViolationException.of("email", userDto.getEmail());
                     }
-                    userMapper.reversedMap(userDto, user);
+                    userMapper.reverseMap(userDto, user);
                     return userDto;
                 })
                 .orElseThrow(() -> EntityNotFoundException.of(User.class, "id", Long.toString(userId)));

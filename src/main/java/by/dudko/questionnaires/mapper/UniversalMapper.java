@@ -14,8 +14,8 @@ public interface UniversalMapper<S, T> {
     T map(S source, T target);
 
     default S reverseMap(T source) {
-        return reversedMap(source, sourceGenerator().get());
+        return reverseMap(source, sourceGenerator().get());
     }
 
-    S reversedMap(T source, S target);
+    S reverseMap(T source, S target);
 }

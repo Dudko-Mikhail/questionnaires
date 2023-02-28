@@ -4,11 +4,7 @@ import by.dudko.questionnaires.model.User;
 import by.dudko.questionnaires.validation.action.Create;
 import by.dudko.questionnaires.validation.annotation.FieldUniqueness;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.Email;

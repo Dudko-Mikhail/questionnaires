@@ -65,7 +65,7 @@ public class FieldServiceImpl implements FieldService {
         return fieldRepository.findById(fieldId)
                 .map(field -> {
                     field.setType(fieldTypeRepository.findByValue(fieldDto.getType()).get());
-                    fieldMapper.reversedMap(fieldDto, field);
+                    fieldMapper.reverseMap(fieldDto, field);
                     return fieldDto;
                 })
                 .orElseThrow(() -> EntityNotFoundException.of(Field.class, "id", Long.toString(fieldId)));

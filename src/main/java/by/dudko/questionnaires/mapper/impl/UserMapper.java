@@ -35,7 +35,7 @@ public class UserMapper implements UniversalMapper<User, UserDto> {
     }
 
     @Override
-    public User reversedMap(UserDto source, User target) {
+    public User reverseMap(UserDto source, User target) {
         target.setEmail(source.getEmail());
         target.setFirstName(source.getFirstName());
         target.setLastName(source.getLastName());

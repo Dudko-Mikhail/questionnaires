@@ -23,19 +23,19 @@ public class ResponseServiceImpl implements ResponseService {
     @Override
     public PageResponse<ResponseDto> findAllByUserId(long userId, Pageable pageable) {
         return PageResponse.of(responseRepository.findAllByQuestionnaireOwnerId(userId, pageable)
-                .map(ResponseDto::of));
+                .map(responseMapper::map));
     }
 
     @Override
     public ResponseDto save(long userId, ResponseDto responseDto) {
         return userRepository.findById(userId)
                 .map(user -> {
-                    Response response = responseMapper.map(responseDto);
+                    Response response = responseMapper.reverseMap(responseDto);
                     response.setQuestionnaireOwner(user);
                     return response;
                 })
                 .map(responseRepository::saveAndFlush)
-                .map(ResponseDto::of)
+                .map(responseMapper::map)
                 .orElseThrow(() -> EntityNotFoundException.of(User.class, "id", Long.toString(userId)));
     }
 }

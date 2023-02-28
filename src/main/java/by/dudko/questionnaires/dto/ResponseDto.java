@@ -1,21 +1,18 @@
 package by.dudko.questionnaires.dto;
 
-import by.dudko.questionnaires.model.Response;
 import lombok.AllArgsConstructor;
-import lombok.Value;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
 import java.util.Map;
 
-@Value
+@Data
+@NoArgsConstructor
 @AllArgsConstructor(staticName = "of")
 public class ResponseDto {
-    Long id;
+    private Long id;
 
     @NotEmpty
-    Map<Long, Object> answer;
-
-    public static ResponseDto of(Response response) {
-        return ResponseDto.of(response.getId(), response.getAnswers());
-    }
+    private Map<Long, Object> answer;
 }

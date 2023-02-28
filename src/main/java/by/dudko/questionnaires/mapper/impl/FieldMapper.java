@@ -38,7 +38,7 @@ public class FieldMapper implements UniversalMapper<Field, FieldDto> {
     }
 
     @Override
-    public Field reversedMap(FieldDto source, Field target) {
+    public Field reverseMap(FieldDto source, Field target) {
         Integer order = source.getOrder();
         if (order != null) {
             target.setOrder(source.getOrder());
