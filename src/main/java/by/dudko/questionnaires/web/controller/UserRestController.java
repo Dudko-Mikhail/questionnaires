@@ -6,8 +6,7 @@ import by.dudko.questionnaires.dto.VerificationDto;
 import by.dudko.questionnaires.dto.error.ErrorResponse;
 import by.dudko.questionnaires.dto.user.ResetPasswordDto;
 import by.dudko.questionnaires.dto.user.UserChangePasswordDto;
-import by.dudko.questionnaires.dto.user.UserEditDto;
-import by.dudko.questionnaires.dto.user.UserReadDto;
+import by.dudko.questionnaires.dto.user.UserDto;
 import by.dudko.questionnaires.repository.UserRepository;
 import by.dudko.questionnaires.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -33,13 +32,13 @@ public class UserRestController {
     private final UserRepository userRepository;
 
     @GetMapping
-    public PageResponse<UserReadDto> findAll(Pageable pageable) {
+    public PageResponse<UserDto> findAll(Pageable pageable) {
         return userService.findAll(pageable);
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("principal.id == #id")
-    public UserReadDto findById(@PathVariable long id) {
+    public UserDto findById(@PathVariable long id) {
         return userService.findById(id);
     }
 
@@ -70,8 +69,9 @@ public class UserRestController {
 
     @PutMapping("/{id}")
     @PreAuthorize("principal.id == #id")
-    public UserReadDto update(@PathVariable long id, @RequestBody @Validated UserEditDto userEditDto) {
-        return userService.update(id, userEditDto);
+    public UserDto update(@PathVariable long id, @RequestBody @Validated UserDto userDto) {
+        userDto.setId(id);
+        return userService.update(userDto);
     }
 
     @PostMapping("/verification-message")

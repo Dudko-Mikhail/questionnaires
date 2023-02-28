@@ -1,8 +1,7 @@
 package by.dudko.questionnaires.web.controller;
 
+import by.dudko.questionnaires.dto.FieldDto;
 import by.dudko.questionnaires.dto.PageResponse;
-import by.dudko.questionnaires.dto.field.FieldCreateEditDto;
-import by.dudko.questionnaires.dto.field.FieldReadDto;
 import by.dudko.questionnaires.service.FieldService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -30,7 +29,7 @@ public class FieldRestController {
     private final FieldService fieldService;
 
     @GetMapping("/users/{id}/fields")
-    public PageResponse<FieldReadDto> findByUserId(@PathVariable("id") long userId, Pageable pageable) {
+    public PageResponse<FieldDto> findByUserId(@PathVariable("id") long userId, Pageable pageable) {
         return fieldService.findAllByUserId(userId, pageable);
     }
 
@@ -42,14 +41,15 @@ public class FieldRestController {
     @ResponseStatus(code = HttpStatus.CREATED)
     @PostMapping("/users/{id}/fields")
     @PreAuthorize("principal.id == #userId")
-    public FieldReadDto saveField(@PathVariable("id") long userId, @RequestBody @Validated FieldCreateEditDto createEditDto) {
-        return fieldService.save(userId, createEditDto);
+    public FieldDto saveField(@PathVariable("id") long userId, @RequestBody @Validated FieldDto fieldDto) {
+        return fieldService.save(userId, fieldDto);
     }
 
     @PutMapping("/fields/{id}")
     @PreAuthorize("@fieldRepository.isFieldOwner(principal.id, #id)")
-    public FieldReadDto updateField(@PathVariable long id, @RequestBody @Validated FieldCreateEditDto createEditDto) {
-        return fieldService.update(id, createEditDto);
+    public FieldDto updateField(@PathVariable long id, @RequestBody @Validated FieldDto fieldDto) {
+        fieldDto.setId(id);
+        return fieldService.update(fieldDto);
     }
 
     @DeleteMapping("/fields/{id}")

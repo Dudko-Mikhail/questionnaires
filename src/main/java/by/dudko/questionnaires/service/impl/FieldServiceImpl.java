@@ -1,11 +1,9 @@
 package by.dudko.questionnaires.service.impl;
 
+import by.dudko.questionnaires.dto.FieldDto;
 import by.dudko.questionnaires.dto.PageResponse;
-import by.dudko.questionnaires.dto.field.FieldCreateEditDto;
-import by.dudko.questionnaires.dto.field.FieldReadDto;
 import by.dudko.questionnaires.exception.EntityNotFoundException;
-import by.dudko.questionnaires.mapper.impl.field.FieldCreateEditMapper;
-import by.dudko.questionnaires.mapper.impl.field.FieldReadMapper;
+import by.dudko.questionnaires.mapper.impl.FieldMapper;
 import by.dudko.questionnaires.model.Field;
 import by.dudko.questionnaires.model.FieldType;
 import by.dudko.questionnaires.model.User;
@@ -26,15 +24,14 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class FieldServiceImpl implements FieldService {
     private final FieldRepository fieldRepository;
-    private final FieldReadMapper fieldReadMapper;
     private final UserRepository userRepository;
     private final FieldTypeRepository fieldTypeRepository;
-    private final FieldCreateEditMapper fieldCreateEditMapper;
+    private final FieldMapper fieldMapper;
 
     @Override
-    public PageResponse<FieldReadDto> findAllByUserId(long userId, Pageable pageable) {
+    public PageResponse<FieldDto> findAllByUserId(long userId, Pageable pageable) {
         return PageResponse.of(fieldRepository.findAllByUserIdOrderByOrder(userId, pageable)
-                .map(fieldReadMapper::map));
+                .map(fieldMapper::map));
     }
 
     @Override
@@ -47,26 +44,30 @@ public class FieldServiceImpl implements FieldService {
 
     @Transactional
     @Override
-    public FieldReadDto save(long userId, FieldCreateEditDto createEditDto) {
+    public FieldDto save(long userId, FieldDto fieldDto) {
         return userRepository.findById(userId)
                 .map(user -> {
-                    Field field = fieldCreateEditMapper.map(createEditDto);
-                    field.setType(fieldTypeRepository.findByValue(createEditDto.getType()).get());
+                    Field field = fieldMapper.reverseMap(fieldDto);
+                    field.setType(fieldTypeRepository.findByValue(fieldDto.getType()).get());
                     int order = fieldRepository.findMaxOrderByUserId(userId) + 1;
                     field.setUser(user);
                     field.setOrder(order);
                     return fieldRepository.save(field);
                 })
-                .map(fieldReadMapper::map)
+                .map(fieldMapper::map)
                 .orElseThrow(() -> EntityNotFoundException.of(User.class, "id", Long.toString(userId)));
     }
 
     @Transactional
     @Override
-    public FieldReadDto update(long fieldId, FieldCreateEditDto createEditDto) {
+    public FieldDto update(FieldDto fieldDto) {
+        long fieldId = fieldDto.getId();
         return fieldRepository.findById(fieldId)
-                .map(field -> fieldCreateEditMapper.map(createEditDto, field))
-                .map(fieldReadMapper::map)
+                .map(field -> {
+                    field.setType(fieldTypeRepository.findByValue(fieldDto.getType()).get());
+                    fieldMapper.reversedMap(fieldDto, field);
+                    return fieldDto;
+                })
                 .orElseThrow(() -> EntityNotFoundException.of(Field.class, "id", Long.toString(fieldId)));
     }
 

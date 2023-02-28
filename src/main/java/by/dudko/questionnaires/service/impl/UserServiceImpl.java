@@ -6,15 +6,11 @@ import by.dudko.questionnaires.dto.auth.AuthenticationResponse;
 import by.dudko.questionnaires.dto.auth.Credentials;
 import by.dudko.questionnaires.dto.user.ResetPasswordDto;
 import by.dudko.questionnaires.dto.user.UserChangePasswordDto;
-import by.dudko.questionnaires.dto.user.UserCreateDto;
 import by.dudko.questionnaires.dto.user.UserDetailsImpl;
-import by.dudko.questionnaires.dto.user.UserEditDto;
-import by.dudko.questionnaires.dto.user.UserReadDto;
+import by.dudko.questionnaires.dto.user.UserDto;
 import by.dudko.questionnaires.exception.EntityNotFoundException;
 import by.dudko.questionnaires.exception.UniqueConstraintViolationException;
-import by.dudko.questionnaires.mapper.impl.user.UserCreateMapper;
-import by.dudko.questionnaires.mapper.impl.user.UserEditMapper;
-import by.dudko.questionnaires.mapper.impl.user.UserReadMapper;
+import by.dudko.questionnaires.mapper.impl.UserMapper;
 import by.dudko.questionnaires.model.User;
 import by.dudko.questionnaires.repository.UserRepository;
 import by.dudko.questionnaires.service.EmailService;
@@ -42,25 +38,23 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    private final UserReadMapper userReadMapper;
-    private final UserCreateMapper userCreateMapper;
-    private final UserEditMapper userEditMapper;
+    private final UserMapper userMapper;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
     private final EmailService emailService;
 
     @Override
-    public UserReadDto findById(long userId) {
+    public UserDto findById(long userId) {
         return userRepository.findById(userId)
-                .map(userReadMapper::map)
+                .map(userMapper::map)
                 .orElseThrow(() -> EntityNotFoundException.of(User.class, "id", Long.toString(userId)));
     }
 
     @Override
-    public PageResponse<UserReadDto> findAll(Pageable pageable) {
+    public PageResponse<UserDto> findAll(Pageable pageable) {
         return PageResponse.of(userRepository.findAll(pageable)
-                .map(userReadMapper::map));
+                .map(userMapper::map));
     }
 
     @Override
@@ -75,9 +69,9 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void signUp(UserCreateDto createDto) {
-        User user = Optional.of(createDto)
-                .map(userCreateMapper::map)
+    public void signUp(UserDto userDto) {
+        User user = Optional.of(userDto)
+                .map(userMapper::reverseMap)
                 .map(userRepository::saveAndFlush)
                 .orElseThrow(NoSuchElementException::new);
         emailService.sendEmailVerificationMessage(user.getEmail(), user.getVerificationCode().toString());
@@ -86,14 +80,15 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public UserReadDto update(long userId, UserEditDto editDto) {
+    public UserDto update(UserDto userDto) {
+        long userId = userDto.getId();
         return userRepository.findById(userId)
                 .map(user -> {
-                    if (!userRepository.isEmailUniqueExceptUserWithId(editDto.getEmail(), userId)) {
-                        throw UniqueConstraintViolationException.of("email", editDto.getEmail());
+                    if (!userRepository.isEmailUniqueExceptUserWithId(userDto.getEmail(), userId)) {
+                        throw UniqueConstraintViolationException.of("email", userDto.getEmail());
                     }
-                    userEditMapper.map(editDto, user);
-                    return userReadMapper.map(user);
+                    userMapper.reversedMap(userDto, user);
+                    return userDto;
                 })
                 .orElseThrow(() -> EntityNotFoundException.of(User.class, "id", Long.toString(userId)));
     }

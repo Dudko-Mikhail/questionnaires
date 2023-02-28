@@ -6,21 +6,19 @@ import by.dudko.questionnaires.dto.auth.AuthenticationResponse;
 import by.dudko.questionnaires.dto.auth.Credentials;
 import by.dudko.questionnaires.dto.user.ResetPasswordDto;
 import by.dudko.questionnaires.dto.user.UserChangePasswordDto;
-import by.dudko.questionnaires.dto.user.UserCreateDto;
-import by.dudko.questionnaires.dto.user.UserEditDto;
-import by.dudko.questionnaires.dto.user.UserReadDto;
+import by.dudko.questionnaires.dto.user.UserDto;
 import org.springframework.data.domain.Pageable;
 
 public interface UserService {
-    UserReadDto findById(long userId);
+    UserDto findById(long userId);
 
-    PageResponse<UserReadDto> findAll(Pageable pageable);
+    PageResponse<UserDto> findAll(Pageable pageable);
 
     AuthenticationResponse login(Credentials credentials);
 
-    void signUp(UserCreateDto createDto);
+    void signUp(UserDto userDto);
 
-    UserReadDto update(long userId, UserEditDto editDto);
+    UserDto update(UserDto editDto);
 
     boolean changePassword(long userId, UserChangePasswordDto changePasswordDto);
 
