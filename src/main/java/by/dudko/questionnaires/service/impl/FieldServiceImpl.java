@@ -51,6 +51,7 @@ public class FieldServiceImpl implements FieldService {
         return userRepository.findById(userId)
                 .map(user -> {
                     Field field = fieldCreateEditMapper.map(createEditDto);
+                    field.setType(fieldTypeRepository.findByValue(createEditDto.getType()).get());
                     int order = fieldRepository.findMaxOrderByUserId(userId) + 1;
                     field.setUser(user);
                     field.setOrder(order);

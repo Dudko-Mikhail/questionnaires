@@ -4,18 +4,13 @@ import by.dudko.questionnaires.dto.field.FieldCreateEditDto;
 import by.dudko.questionnaires.mapper.Mapper;
 import by.dudko.questionnaires.mapper.MapperWithTargetObject;
 import by.dudko.questionnaires.model.Field;
-import by.dudko.questionnaires.repository.FieldTypeRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;
 
 @Component
-@RequiredArgsConstructor
 public class FieldCreateEditMapper implements Mapper<FieldCreateEditDto, Field>,
         MapperWithTargetObject<FieldCreateEditDto, Field> {
-    private final FieldTypeRepository fieldTypeRepository;
-
     @Override
     public Field map(FieldCreateEditDto source) {
         return copy(source, new Field());
@@ -31,8 +26,6 @@ public class FieldCreateEditMapper implements Mapper<FieldCreateEditDto, Field>,
             target.setOrder(source.getOrder());
         }
         target.setLabel(source.getLabel());
-        target.setType(fieldTypeRepository.findByValue(source.getType())
-                .orElseThrow(() -> new RuntimeException("Validation failed. Invalid filed type " + source.getType())));
         Set<String> options = source.getOptions();
         target.setOptions(options != null ? options.toArray(new String[0]) : null);
         target.setRequired(source.getIsRequired());
