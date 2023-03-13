@@ -35,8 +35,8 @@ public class Response {
     private long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private User questionnaireOwner;
+    @JoinColumn(name = "questionnaire_id", referencedColumnName = "id")
+    private Questionnaire questionnaire;
 
     @Type(type = "json")
     private Map<Long, Object> answers;

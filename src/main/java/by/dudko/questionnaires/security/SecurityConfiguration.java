@@ -31,11 +31,11 @@ public class SecurityConfiguration {
                 .cors()
                 .and()
                 .authorizeHttpRequests()
-                .antMatchers("/api/auth/**", "/api/users/{id}/responses",
-                        "/api/users/email/verification", "/api/users/password/recovery", "/api/users/verification-code",
-                        "/api/users/verification-message", "/api/users/reset-password-message",
-                        "/api/fields/types", "/api/users/{id}/fields", "/ws/**",
-                        "/api/questionnaires", "/api/users/password").permitAll()
+                .antMatchers("/api/auth/**", "/api/users/password", "/api/users/email/verification",
+                        "/api/users/password/recovery", "/api/users/verification-code",
+                        "/api/users/verification-message", "/api/users/reset-password-message", "/api/fields/types",
+                        "/api/questionnaires", "/api/questionnaires/{id}", "/api/questionnaires/{id}/fields",
+                        "/api/questionnaires/{id}/responses", "/ws/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement()

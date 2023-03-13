@@ -24,15 +24,17 @@ public class ResponseRestController {
     private final SimpMessagingTemplate messagingTemplate;
     private final ResponseService responseService;
 
-    @GetMapping("/users/{id}/responses")
-    @PreAuthorize("principal.id == #id")
-    public PageResponse<ResponseDto> findAllByUserId(@PathVariable long id, Pageable pageable) {
-        return responseService.findAllByUserId(id, pageable);
+    @PreAuthorize("@questionnaireServiceImpl.isQuestionnaireOwner(principal.id, #questionnaireId)")
+    @GetMapping("/questionnaires/{id}/responses")
+    public PageResponse<ResponseDto> findAllByQuestionnaireId(@PathVariable("id") long questionnaireId,
+                                                              Pageable pageable) {
+        return responseService.findAllByQuestionnaireId(questionnaireId, pageable);
     }
 
-    @PostMapping("/users/{id}/responses")
-    public ResponseDto saveResponse(@PathVariable long id, @RequestBody @Validated ResponseDto responseDto) {
-        ResponseDto savedResponse = responseService.save(id, responseDto);
+    @PostMapping("/questionnaires/{id}/responses")
+    public ResponseDto saveResponse(@PathVariable("id") long questionnaireId,
+                                    @RequestBody @Validated ResponseDto responseDto) {
+        ResponseDto savedResponse = responseService.save(questionnaireId, responseDto);
         this.messagingTemplate.convertAndSend("/topic/responses", savedResponse);
         return savedResponse;
     }

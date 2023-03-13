@@ -1,6 +1,5 @@
 package by.dudko.questionnaires.service.impl;
 
-import by.dudko.questionnaires.dto.PageResponse;
 import by.dudko.questionnaires.dto.VerificationDto;
 import by.dudko.questionnaires.dto.auth.AuthenticationResponse;
 import by.dudko.questionnaires.dto.auth.Credentials;
@@ -18,7 +17,6 @@ import by.dudko.questionnaires.service.UserService;
 import by.dudko.questionnaires.util.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -48,13 +46,7 @@ public class UserServiceImpl implements UserService {
     public UserDto findById(long userId) {
         return userRepository.findById(userId)
                 .map(userMapper::map)
-                .orElseThrow(() -> EntityNotFoundException.of(User.class, User.Fields.id, Long.toString(userId)));
-    }
-
-    @Override
-    public PageResponse<UserDto> findAll(Pageable pageable) {
-        return PageResponse.of(userRepository.findAll(pageable)
-                .map(userMapper::map));
+                .orElseThrow(() -> EntityNotFoundException.byId(User.class, Long.toString(userId)));
     }
 
     @Override
@@ -90,7 +82,7 @@ public class UserServiceImpl implements UserService {
                     userMapper.reverseMap(userDto, user);
                     return userDto;
                 })
-                .orElseThrow(() -> EntityNotFoundException.of(User.class, User.Fields.id, Long.toString(userId)));
+                .orElseThrow(() -> EntityNotFoundException.byId(User.class, Long.toString(userId)));
     }
 
     @Transactional
@@ -105,7 +97,7 @@ public class UserServiceImpl implements UserService {
                     emailService.sendPasswordChangedMessage(user.getEmail());
                     return true;
                 })
-                .orElseThrow(() -> EntityNotFoundException.of(User.class, User.Fields.id, Long.toString(userId)));
+                .orElseThrow(() -> EntityNotFoundException.byId(User.class, Long.toString(userId)));
     }
 
     @Transactional

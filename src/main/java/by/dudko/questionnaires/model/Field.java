@@ -6,7 +6,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.FieldNameConstants;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
@@ -26,16 +25,15 @@ import javax.persistence.Table;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@EqualsAndHashCode(exclude = {"id", "user"})
-@FieldNameConstants
+@EqualsAndHashCode(exclude = {"id", "questionnaire"})
 public class Field {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private User user;
+    @JoinColumn(name = "questionnaire_id", referencedColumnName = "id")
+    private Questionnaire questionnaire;
 
     @Column(name = "`order`")
     private int order;

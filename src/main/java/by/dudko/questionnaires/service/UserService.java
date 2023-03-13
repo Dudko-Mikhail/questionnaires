@@ -1,18 +1,14 @@
 package by.dudko.questionnaires.service;
 
-import by.dudko.questionnaires.dto.PageResponse;
 import by.dudko.questionnaires.dto.VerificationDto;
 import by.dudko.questionnaires.dto.auth.AuthenticationResponse;
 import by.dudko.questionnaires.dto.auth.Credentials;
 import by.dudko.questionnaires.dto.user.ResetPasswordDto;
 import by.dudko.questionnaires.dto.user.UserChangePasswordDto;
 import by.dudko.questionnaires.dto.user.UserDto;
-import org.springframework.data.domain.Pageable;
 
 public interface UserService {
     UserDto findById(long userId);
-
-    PageResponse<UserDto> findAll(Pageable pageable);
 
     AuthenticationResponse login(Credentials credentials);
 

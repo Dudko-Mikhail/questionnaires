@@ -28,9 +28,9 @@ import java.util.List;
 public class FieldRestController {
     private final FieldService fieldService;
 
-    @GetMapping("/users/{id}/fields")
-    public PageResponse<FieldDto> findByUserId(@PathVariable("id") long userId, Pageable pageable) {
-        return fieldService.findAllByUserId(userId, pageable);
+    @GetMapping("/questionnaires/{id}/fields")
+    public PageResponse<FieldDto> findByUserId(@PathVariable("id") long questionnaireId, Pageable pageable) {
+        return fieldService.findAllByQuestionnaireId(questionnaireId, pageable);
     }
 
     @GetMapping("/fields/types")
@@ -39,21 +39,21 @@ public class FieldRestController {
     }
 
     @ResponseStatus(code = HttpStatus.CREATED)
-    @PostMapping("/users/{id}/fields")
-    @PreAuthorize("principal.id == #userId")
-    public FieldDto saveField(@PathVariable("id") long userId, @RequestBody @Validated FieldDto fieldDto) {
-        return fieldService.save(userId, fieldDto);
+    @PostMapping("/questionnaires/{id}/fields")
+    @PreAuthorize("@questionnaireServiceImpl.isQuestionnaireOwner(principal.id, #questionnaireId)")
+    public FieldDto saveField(@PathVariable("id") long questionnaireId, @RequestBody @Validated FieldDto fieldDto) {
+        return fieldService.save(questionnaireId, fieldDto);
     }
 
     @PutMapping("/fields/{id}")
-    @PreAuthorize("@fieldRepository.isFieldOwner(principal.id, #id)")
+    @PreAuthorize("@fieldServiceImpl.isFieldOwner(principal.id, #id)")
     public FieldDto updateField(@PathVariable long id, @RequestBody @Validated FieldDto fieldDto) {
         fieldDto.setId(id);
         return fieldService.update(fieldDto);
     }
 
     @DeleteMapping("/fields/{id}")
-    @PreAuthorize("@fieldRepository.isFieldOwner(principal.id, #id)")
+    @PreAuthorize("@fieldServiceImpl.isFieldOwner(principal.id, #id)")
     public void deleteById(@PathVariable("id") long id) {
         fieldService.deleteById(id);
     }

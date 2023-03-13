@@ -1,16 +1,13 @@
 package by.dudko.questionnaires.web.controller;
 
 import by.dudko.questionnaires.dto.MessageRequest;
-import by.dudko.questionnaires.dto.PageResponse;
 import by.dudko.questionnaires.dto.VerificationDto;
 import by.dudko.questionnaires.dto.error.ErrorResponse;
 import by.dudko.questionnaires.dto.user.ResetPasswordDto;
 import by.dudko.questionnaires.dto.user.UserChangePasswordDto;
 import by.dudko.questionnaires.dto.user.UserDto;
-import by.dudko.questionnaires.repository.UserRepository;
 import by.dudko.questionnaires.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -29,12 +26,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class UserRestController {
     private final UserService userService;
-    private final UserRepository userRepository;
-
-    @GetMapping
-    public PageResponse<UserDto> findAll(Pageable pageable) {
-        return userService.findAll(pageable);
-    }
 
     @GetMapping("/{id}")
     @PreAuthorize("principal.id == #id")

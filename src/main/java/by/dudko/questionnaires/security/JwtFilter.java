@@ -58,8 +58,8 @@ public class JwtFilter extends OncePerRequestFilter {
             authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             return authenticationToken;
         } catch (UsernameNotFoundException e) {
-            log.warn("Token valid, but failed to load user by username: " + email);
-            return null;
+            log.error("Token valid, but failed to load user by username: " + email);
+            throw e;
         }
     }
 }

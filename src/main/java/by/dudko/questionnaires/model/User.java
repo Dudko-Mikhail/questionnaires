@@ -39,11 +39,7 @@ public class User {
     private boolean isActivated;
     private UUID verificationCode;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "owner")
     @Builder.Default
-    private List<Field> fields = new ArrayList<>();
-
-    @OneToMany(mappedBy = "questionnaireOwner")
-    @Builder.Default
-    private List<Response> responses = new ArrayList<>();
+    private List<Questionnaire> questionnaires = new ArrayList<>();
 }

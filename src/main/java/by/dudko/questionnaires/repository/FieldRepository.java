@@ -8,11 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface FieldRepository extends JpaRepository<Field, Long> {
-    Page<Field> findAllByUserIdOrderByOrder(long userId, Pageable pageable);
+    Page<Field> findAllByQuestionnaireIdOrderByOrder(long questionnaireId, Pageable pageable);
 
-    @Query("select coalesce(max(f.order), 0) from Field f where f.user.id = :userId")
-    int findMaxOrderByUserId(@Param(value = "userId") long userId);
-
-    @Query("select count(f.id) <> 0 from Field f where f.id = :fieldId and f.user.id = :userId")
-    boolean isFieldOwner(@Param(value = "userId") long userId, @Param(value = "fieldId") long fieldId);
+    @Query("select coalesce(max(f.order), 0) from Field f where f.questionnaire.id = :questionnaireId")
+    int findMaxOrderByQuestionnaireId(@Param(value = "questionnaireId") long questionnaireId);
 }
